@@ -8,7 +8,8 @@ export class HomePresenter {
   async loadStories(token) {
     try {
       this.view.showLoading();
-      this.stories = await this.getStories(token);
+      const result = await this.getStories(token);
+      this.stories = result.listStory;
       this.view.showStories(this.stories);
     } catch (error) {
       this.view.showError(error);

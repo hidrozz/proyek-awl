@@ -1,2 +1,2 @@
-APP_URL=<url_aplikasi>
-MAP_SERVICE_API_KEY=<api_key>
+APP_URL=https://velvety-praline-065919.netlify.app
+MAP_SERVICE_API_KEY=-
