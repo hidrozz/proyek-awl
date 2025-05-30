@@ -8,7 +8,7 @@
     "serve": "http-server dist"
   },
   "keywords": [],
-  "author": "YOUR_NAME <yourmail@mail.com>",
+  "author": "hidayat.nur2402@mail.ugm.ac.id",
   "license": "ISC",
   "devDependencies": {
     "@babel/preset-env": "^7.26.9",
