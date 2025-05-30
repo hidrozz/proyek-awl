@@ -1,36 +1,51 @@
-const BASE_URL = 'https://story-api.dicoding.dev/v1';
+import { BASE_URL } from '../config';
 
-// Ambil semua story (dengan atau tanpa lokasi)
 export async function getStories(token, withLocation = false) {
-  const res = await fetch(`${BASE_URL}/stories?location=${withLocation ? 1 : 0}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  try {
+    const response = await fetch(`${BASE_URL}/stories?location=${withLocation ? 1 : 0}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  if (!res.ok) throw new Error('FETCH_STORIES_FAILED');
-  return res.json();
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'FETCH_STORIES_FAILED');
+    return result;
+  } catch (error) {
+    throw new Error(error.message || 'FETCH_STORIES_FAILED');
+  }
 }
 
-// Ambil detail story berdasarkan ID
 export async function getStoryDetail(id, token) {
-  const response = await fetch(`${BASE_URL}/stories/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  try {
+    const response = await fetch(`${BASE_URL}/stories/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.message);
-  return result.story;
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'FETCH_DETAIL_FAILED');
+    return result.story;
+  } catch (error) {
+    throw new Error(error.message || 'FETCH_DETAIL_FAILED');
+  }
 }
 
-// Kirim story baru (deskripsi, foto, opsional lat/lon)
 export async function postStory(formData, token) {
-  const res = await fetch(`${BASE_URL}/stories`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
-    body: formData,
-  });
+  try {
+    const response = await fetch(`${BASE_URL}/stories`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
 
-  if (!res.ok) throw new Error('POST_STORY_FAILED');
-  return res.json();
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'POST_STORY_FAILED');
+    return result;
+  } catch (error) {
+    throw new Error(error.message || 'POST_STORY_FAILED');
+  }
 }

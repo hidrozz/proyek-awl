@@ -11,5 +11,5 @@ export const routes = {
   '/login': () => new LoginPage(),
   '/register': () => new RegisterPage(),
   '/about': () => new AboutPage(),
-  '/detail/:id': () => new DetailPage(), // jangan hapus
+  '/detail/:id': () => new DetailPage(), 
 };

@@ -1,29 +1,28 @@
 import { getStoryDetail } from '../../model/story';
 import { getActiveRoute } from '../../routes/url-parser';
+import { DetailPresenter } from './detail-presenter';
 
 export class DetailPage {
-  #story = null;
+  #presenter = null;
 
-  async render() {
+  render() {
     return `
       <section class="container">
         <h2 id="story-title">Detail Story</h2>
-        <div id="story-detail">Memuat...</div>
+        <div id="story-detail" aria-live="polite">Memuat...</div>
       </section>
     `;
   }
 
   async afterRender() {
     const { id } = getActiveRoute(true);
-    try {
-      this.#story = await getStoryDetail(id, localStorage.getItem('token'));
-      this.#showDetail(this.#story);
-    } catch (error) {
-      document.getElementById('story-detail').innerHTML = `<p>Gagal memuat detail: ${error.message}</p>`;
-    }
+    const token = localStorage.getItem('token');
+
+    this.#presenter = new DetailPresenter(getStoryDetail, this);
+    await this.#presenter.loadDetail(id, token);
   }
 
-  #showDetail(story) {
+  showDetail(story) {
     const detail = document.getElementById('story-detail');
     detail.innerHTML = `
       <img src="${story.photoUrl}" alt="${story.name}" width="250" />
@@ -33,5 +32,9 @@ export class DetailPage {
       <p><strong>Latitude:</strong> ${story.lat ?? '-'}</p>
       <p><strong>Longitude:</strong> ${story.lon ?? '-'}</p>
     `;
+  }
+
+  showError(error) {
+    document.getElementById('story-detail').innerHTML = `<p>Gagal memuat detail: ${error.message}</p>`;
   }
 }

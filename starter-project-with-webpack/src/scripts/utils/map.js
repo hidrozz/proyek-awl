@@ -73,18 +73,13 @@ export default class Map {
     newMarker.addTo(this.#map);
     return newMarker;
   }
-  /**
-   * Reference of using this static method:
-   * https://stackoverflow.com/questions/43431550/how-can-i-invoke-asynchronous-code-within-a-constructor
-   * */
   static async build(selector, options = {}) {
     if ('center' in options && options.center) {
       return new Map(selector, options);
     }
  
     const jakartaCoordinate = [-6.2, 106.816666];
- 
-    // Using Geolocation API
+
     if ('locate' in options && options.locate) {
       try {
         const position = await Map.getCurrentPosition();

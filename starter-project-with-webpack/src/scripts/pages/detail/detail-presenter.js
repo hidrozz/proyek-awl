@@ -6,8 +6,8 @@ export class DetailPresenter {
 
   async loadDetail(id, token) {
     try {
-      const result = await this.modelFn(id, token);
-      this.view.showDetail(result.story);
+      const story = await this.modelFn(id, token); 
+      this.view.showDetail(story);
     } catch (error) {
       this.view.showError(error);
     }

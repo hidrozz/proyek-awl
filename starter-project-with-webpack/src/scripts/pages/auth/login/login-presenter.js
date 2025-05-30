@@ -1,3 +1,5 @@
+import { ACCESS_TOKEN_KEY } from '../../../config';
+
 export class LoginPresenter {
   constructor(modelFn, view) {
     this.modelFn = modelFn;
@@ -8,7 +10,7 @@ export class LoginPresenter {
     try {
       this.view.showLoading();
       const { loginResult } = await this.modelFn(email, password);
-      localStorage.setItem('token', loginResult.token);
+      localStorage.setItem(ACCESS_TOKEN_KEY, loginResult.token);
       this.view.showSuccess(loginResult.name);
       window.location.hash = '#/';
     } catch (error) {

@@ -11,8 +11,12 @@ export class HomePage {
     const token = localStorage.getItem('token');
     return `
       <section class="container">
-        ${token ? '<a href="#/add" class="btn-add">➕ Tambah Cerita</a>' : ''}
-        <h2>Daftar Cerita</h2>
+        <div>
+          ${token ? '<a href="#/add" class="btn-add">➕ Tambah Cerita</a>' : ''}
+        </div>
+        <div>
+          <h2>Daftar Cerita</h2>
+        </div>
         <input type="text" id="search-input" placeholder="Cari cerita..." style="margin-bottom: 16px; padding: 8px; width: 100%;" />
         <div id="map" style="height: 300px; margin-bottom: 16px;"></div>
         <ul id="story-list" class="story-list"></ul>

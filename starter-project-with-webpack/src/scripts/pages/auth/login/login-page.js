@@ -10,10 +10,9 @@ export class LoginPage {
         <h2>Masuk ke Akun</h2>
         <form id="login-form">
           <label for="email">Email</label>
-          <input type="email" id="email" name="email" required />
-          
+          <input type="email" id="email" name="email" autocomplete="email" required />
           <label for="password">Password</label>
-          <input type="password" id="password" name="password" required />
+          <input type="password" id="password" name="password" autocomplete="current-password" required />
           
           <button type="submit">Login</button>
         </form>

@@ -8,6 +8,8 @@ export class AddPage {
   #map = null;
   #marker = null;
   videoStream = null;
+  lat = null;
+  lon = null;
 
   render() {
     return `
@@ -20,7 +22,7 @@ export class AddPage {
           <label>Ambil Gambar</label>
           <button type="button" id="start-camera">Buka Kamera</button><br><br>
           <video id="camera" width="300" autoplay style="display:none;"></video>
-          <canvas id="canvas" style="display:none;"></canvas>
+          <canvas id="canvas" width="300" height="300" style="display:none;"></canvas>
           <input type="file" id="photo" name="photo" accept="image/*" capture="environment" />
 
           <div id="map" style="height: 300px; margin: 16px 0;"></div>
@@ -34,7 +36,7 @@ export class AddPage {
   async afterRender() {
     this.#presenter = new AddPresenter(postStory, this);
 
-    // Inisialisasi peta
+   
     this.#map = L.map('map').setView([-2.5489, 118.0149], 4);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
@@ -48,49 +50,48 @@ export class AddPage {
       this.lon = e.latlng.lng;
     });
 
-    // Kamera
     const startButton = document.getElementById('start-camera');
     const video = document.getElementById('camera');
     const canvas = document.getElementById('canvas');
     const fileInput = document.getElementById('photo');
+    const form = document.getElementById('add-form');
 
     startButton.addEventListener('click', async () => {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Browser tidak mendukung kamera. Gunakan HTTPS atau localhost.');
-        return;
-      }
-      try {
-        this.videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = this.videoStream;
-        video.style.display = 'block';
-        canvas.style.display = 'none';
-        startButton.textContent = 'Ambil Gambar';
-
-        startButton.addEventListener('click', () => {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          canvas.getContext('2d').drawImage(video, 0, 0);
-          canvas.toBlob((blob) => {
-            const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            fileInput.files = dataTransfer.files;
-          }, 'image/jpeg');
-          video.style.display = 'none';
-          canvas.style.display = 'block';
-          this.videoStream.getTracks().forEach((track) => track.stop());
-        }, { once: true });
-      } catch (error) {
-        alert('Tidak dapat mengakses kamera: ' + error.message);
-      }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+      video.style.display = 'block';
+      this.videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = this.videoStream;
     });
 
-    document.getElementById('add-form').addEventListener('submit', async (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const desc = document.getElementById('description').value;
-      const photo = document.getElementById('photo').files[0];
       const token = localStorage.getItem('token');
-      await this.#presenter.sendStory({ desc, photo, lat: this.lat, lon: this.lon, token });
+
+      let photoFile = fileInput.files[0];
+
+      
+      if (!photoFile && this.videoStream) {
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        photoFile = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+      }
+
+      
+      if (this.videoStream) {
+        this.videoStream.getTracks().forEach(track => track.stop());
+        video.style.display = 'none';
+        this.videoStream = null;
+      }
+
+      if (!photoFile) return alert('Mohon upload atau ambil gambar terlebih dahulu');
+
+      await this.#presenter.sendStory({
+        desc,
+        photo: photoFile,
+        lat: this.lat,
+        lon: this.lon,
+        token,
+      });
     });
   }
 
@@ -100,10 +101,10 @@ export class AddPage {
 
   showSuccess() {
     alert('Cerita berhasil ditambahkan!');
-    window.location.hash = '#/';
+    location.href = '#/';
   }
 
   showError(error) {
-    alert(`Gagal mengirim cerita: ${error.message}`);
+    alert('Gagal mengirim cerita: ' + error.message);
   }
 }

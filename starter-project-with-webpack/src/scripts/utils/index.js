@@ -30,9 +30,7 @@ export async function createCarousel(containerElement, options = {}) {
   });
 }
 
-/**
- * Ref: https://stackoverflow.com/questions/18650168/convert-blob-to-base64
- */
+
 export function convertBlobToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -42,9 +40,7 @@ export function convertBlobToBase64(file) {
   });
 }
 
-/**
- * Ref: https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
- */
+
 export function convertBase64ToBlob(base64Data, contentType = '', sliceSize = 512) {
   const byteCharacters = atob(base64Data);
   const byteArrays = [];
@@ -84,7 +80,7 @@ export function transitionHelper({ skipTransition = false, updateDOM }) {
   if (skipTransition || typeof document.startViewTransition !== 'function') {
     const updateCallbackDone = Promise.resolve(updateDOM());
     return {
-      ready: Promise.resolve(),               // tambahkan ini agar tidak undefined
+      ready: Promise.resolve(),               
       updateCallbackDone,
       finished: updateCallbackDone,
     };

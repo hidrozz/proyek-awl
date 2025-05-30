@@ -10,13 +10,13 @@ export class RegisterPage {
         <h2>Daftar Akun</h2>
         <form id="register-form">
           <label for="name">Nama</label>
-          <input type="text" id="name" name="name" required />
+          <input type="text" id="name" name="name" required autocomplete="name" />
           
           <label for="email">Email</label>
-          <input type="email" id="email" name="email" required />
+          <input type="email" id="email" name="email" required autocomplete="email" />
           
           <label for="password">Password</label>
-          <input type="password" id="password" name="password" required minlength="8" />
+          <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password" />
           
           <button type="submit">Daftar</button>
         </form>

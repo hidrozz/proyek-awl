@@ -1,12 +1,25 @@
-* {
-  margin: 0;
-  padding: 0;
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
 
+* {
+  margin: 5;
+  padding: 5;
   box-sizing: border-box;
 }
 
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: 'Orbitron', sans-serif;
+  background-color: #0d0c1d;
+  color: #f5f5f5;
+  background-image: radial-gradient(circle at 1px 1px, #1f1b3a 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+a {
+  color: #00f0ff;
+  text-decoration: none;
+}
+a:hover {
+  text-shadow: 0 0 10px #00f0ff;
 }
 
 .container {
@@ -16,13 +29,13 @@ body {
 }
 
 header {
-  background-color: lightskyblue;
+  background-color: #191933;
+  box-shadow: 0 0 10px #00f0ff;
 }
 
 .main-header {
   min-height: 90px;
   padding-block: 20px;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -33,64 +46,59 @@ header {
   font-size: 1.125rem;
   font-weight: bold;
   text-decoration: none;
-  color: #333;
+  color: #ff00ff;
+  text-shadow: 0 0 8px #ff00ff;
 }
 
 .navigation-drawer {
   min-height: 100vh;
   width: 200px;
   padding: 20px 10px;
-  background-color: #fff;
-
+  background-color: #1a1a2e;
   position: fixed;
   inset-block-start: 0;
   inset-inline-start: 0;
-
-  box-shadow: 0 0 4px 2px #00000033;
+  box-shadow: 0 0 4px 2px #00f0ff66;
   transform: translateX(-100%);
   transition: transform 350ms;
-
   z-index: 9999;
+  display: flex;
 }
 
 .navigation-drawer.open {
   transform: translateX(0);
+  display: flex;
 }
 
 .drawer-button {
   padding: 8px;
   border: 0;
   border-radius: 4px;
-
   display: inline-block;
   background-color: transparent;
-
   font-weight: bold;
   font-size: 28px;
-  color: #141e16;
-
+  color: #00f0ff;
   cursor: pointer;
 }
 
 .nav-list {
   list-style: none;
-
   display: flex;
   flex-direction: column;
   gap: 10px 20px;
 }
-
+.nav-list li {
+  list-style: none;
+}
 .nav-list li a {
   padding: 6px 10px;
-
   display: block;
-  
-  color: #333;
-  text-decoration: none;
+  color: #f5f5f5;
 }
-
 .nav-list li a:hover {
   text-decoration: underline;
+  text-shadow: 0 0 5px #ff00ff;
 }
 
 /* MAIN */
@@ -98,7 +106,49 @@ header {
   padding-block: 20px;
 }
 
-/* Write your styles more here */
+input, textarea, button, select {
+  background-color: #0f0f2d;
+  color: #f5f5f5;
+  border: 1px solid #00f0ff;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 0.5rem 0;
+  width: 100%;
+  font-family: 'Orbitron', sans-serif;
+}
+
+button {
+  background-color: #00f0ff;
+  color: #000;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+button:hover {
+  background-color: #ff00ff;
+  color: #fff;
+  box-shadow: 0 0 10px #ff00ff;
+}
+
+.btn-add {
+  background-color: #ff00ff;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  box-shadow: 0 0 10px #ff00ffaa;
+}
+.btn-add:hover {
+  background-color: #ff55ff;
+  box-shadow: 0 0 20px #ff00ff;
+}
+
+#map {
+  border: 2px solid #00f0ff;
+  border-radius: 6px;
+  margin-block: 1rem;
+}
 
 @media screen and (width > 1000px) {
   .navigation-drawer {
@@ -106,10 +156,8 @@ header {
     width: auto;
     padding: 0;
     background-color: transparent;
-
     flex-direction: row;
     justify-content: space-between;
-
     position: static;
     box-shadow: none;
     transform: translateX(0);
@@ -127,17 +175,20 @@ header {
     display: none;
   }
 }
+
 .skip-link {
   position: absolute;
   top: -40px;
   left: 0;
-  background: #000;
-  color: #fff;
+  background: #00f0ff;
+  color: #000;
   padding: 8px;
   z-index: 100;
   transition: top 0.3s;
+  font-weight: bold;
 }
-
 .skip-link:focus {
   top: 0;
+  display: none; 
 }
+

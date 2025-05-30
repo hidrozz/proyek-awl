@@ -34,10 +34,10 @@ export default class App {
     });
 
     document.body.addEventListener('click', (event) => {
-      const isTargetInsideDrawer = this.#drawerNavigation.contains(event.target);
-      const isTargetInsideButton = this.#drawerButton.contains(event.target);
+      const isInsideDrawer = this.#drawerNavigation.contains(event.target);
+      const isInsideButton = this.#drawerButton.contains(event.target);
 
-      if (!(isTargetInsideDrawer || isTargetInsideButton)) {
+      if (!isInsideDrawer && !isInsideButton) {
         this.#drawerNavigation.classList.remove('open');
       }
 
@@ -55,7 +55,7 @@ export default class App {
     const navList = document.getElementById('navlist');
 
     if (!navListMain || !navList) {
-      console.warn('Elemen navlist-main atau navlist tidak ditemukan');
+      console.warn('[App] Elemen navigasi tidak ditemukan.');
       return;
     }
 
@@ -84,15 +84,16 @@ export default class App {
     const url = getActiveRoute();
     const route = routes[url];
 
-    if (!route) {
-      console.warn(`Route tidak ditemukan: ${url}`);
+    if (!route || typeof route !== 'function') {
+      console.error(`[App] Route tidak ditemukan atau tidak valid: ${url}`);
       this.#content.innerHTML = '<h2>404 - Halaman tidak ditemukan</h2>';
       return;
     }
 
-    const page = route(); // akan hasilkan instance seperti new DetailPage()
+    const page = route();
+
     if (!page || typeof page.render !== 'function') {
-      console.error('Halaman tidak valid:', page);
+      console.error('[App] Halaman tidak memiliki method render().');
       this.#content.innerHTML = '<h2>Error saat memuat halaman.</h2>';
       return;
     }
@@ -100,24 +101,25 @@ export default class App {
     const transition = transitionHelper({
       updateDOM: async () => {
         this.#content.innerHTML = await page.render();
-        await page.afterRender();
+        if (typeof page.afterRender === 'function') {
+          await page.afterRender();
+        }
       },
     });
 
     try {
       if (transition.ready) await transition.ready;
     } catch (err) {
-      console.warn('Transition not supported or failed:', err.message);
+      console.warn('[App] ViewTransition not supported:', err.message);
     }
 
     try {
       if (transition.updateCallbackDone) await transition.updateCallbackDone;
     } catch (err) {
-      console.warn('Update callback failed:', err.message);
+      console.warn('[App] Update callback gagal:', err.message);
     }
 
     scrollTo({ top: 0, behavior: 'instant' });
     this.#setupNavigationList();
   }
-
 }
