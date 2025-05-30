@@ -10,6 +10,7 @@ export class LoginPresenter {
       const { loginResult } = await this.modelFn(email, password);
       localStorage.setItem('token', loginResult.token);
       this.view.showSuccess(loginResult.name);
+      window.location.hash = '#/';
     } catch (error) {
       this.view.showError(error);
     }

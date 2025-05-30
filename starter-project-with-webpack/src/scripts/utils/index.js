@@ -80,11 +80,20 @@ export function setupSkipToContent(element, mainContent) {
   element.addEventListener('click', () => mainContent.focus());
 }
 
-export function transitionHelper(callback) {
-  if (!document.startViewTransition) {
-    callback();
-    return;
+export function transitionHelper({ skipTransition = false, updateDOM }) {
+  if (skipTransition || typeof document.startViewTransition !== 'function') {
+    const updateCallbackDone = Promise.resolve(updateDOM());
+    return {
+      ready: Promise.resolve(),               // tambahkan ini agar tidak undefined
+      updateCallbackDone,
+      finished: updateCallbackDone,
+    };
   }
 
-  document.startViewTransition(callback);
+  const transition = document.startViewTransition(updateDOM);
+  return {
+    ready: transition.ready,
+    updateCallbackDone: transition.updateCallbackDone,
+    finished: transition.finished,
+  };
 }

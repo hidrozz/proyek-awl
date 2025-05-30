@@ -51,8 +51,13 @@ export default class App {
 
   #setupNavigationList() {
     const isLogin = !!getAccessToken();
-    const navListMain = this.#drawerNavigation.children.namedItem('navlist-main');
-    const navList = this.#drawerNavigation.children.namedItem('navlist');
+    const navListMain = document.getElementById('navlist-main');
+    const navList = document.getElementById('navlist');
+
+    if (!navListMain || !navList) {
+      console.warn('Elemen navlist-main atau navlist tidak ditemukan');
+      return;
+    }
 
     if (!isLogin) {
       navListMain.innerHTML = '';
@@ -64,20 +69,33 @@ export default class App {
     navList.innerHTML = generateAuthenticatedNavigationListTemplate();
 
     const logoutButton = document.getElementById('logout-button');
-    logoutButton.addEventListener('click', (event) => {
-      event.preventDefault();
-      if (confirm('Apakah Anda yakin ingin keluar?')) {
-        getLogout();
-        location.hash = '/login';
-      }
-    });
+    if (logoutButton) {
+      logoutButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (confirm('Apakah Anda yakin ingin keluar?')) {
+          getLogout();
+          location.hash = '/login';
+        }
+      });
+    }
   }
 
   async renderPage() {
     const url = getActiveRoute();
     const route = routes[url];
 
-    const page = route();
+    if (!route) {
+      console.warn(`Route tidak ditemukan: ${url}`);
+      this.#content.innerHTML = '<h2>404 - Halaman tidak ditemukan</h2>';
+      return;
+    }
+
+    const page = route(); // akan hasilkan instance seperti new DetailPage()
+    if (!page || typeof page.render !== 'function') {
+      console.error('Halaman tidak valid:', page);
+      this.#content.innerHTML = '<h2>Error saat memuat halaman.</h2>';
+      return;
+    }
 
     const transition = transitionHelper({
       updateDOM: async () => {
@@ -86,10 +104,20 @@ export default class App {
       },
     });
 
-    (transition.ready || Promise.resolve()).catch(console.error);
-    (transition.updateCallbackDone || Promise.resolve()).then(() => {
-      scrollTo({ top: 0, behavior: 'instant' });
-      this.#setupNavigationList();
-    });
+    try {
+      if (transition.ready) await transition.ready;
+    } catch (err) {
+      console.warn('Transition not supported or failed:', err.message);
+    }
+
+    try {
+      if (transition.updateCallbackDone) await transition.updateCallbackDone;
+    } catch (err) {
+      console.warn('Update callback failed:', err.message);
+    }
+
+    scrollTo({ top: 0, behavior: 'instant' });
+    this.#setupNavigationList();
   }
+
 }

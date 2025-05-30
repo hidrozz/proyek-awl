@@ -12,12 +12,15 @@ export async function getStories(token, withLocation = false) {
 
 // Ambil detail story berdasarkan ID
 export async function getStoryDetail(id, token) {
-  const res = await fetch(`${BASE_URL}/stories/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
+  const response = await fetch(`${BASE_URL}/stories/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
-  if (!res.ok) throw new Error('FETCH_STORY_DETAIL_FAILED');
-  return res.json();
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message);
+  return result.story;
 }
 
 // Kirim story baru (deskripsi, foto, opsional lat/lon)

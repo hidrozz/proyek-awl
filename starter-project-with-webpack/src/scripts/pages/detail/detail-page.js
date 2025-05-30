@@ -1,52 +1,37 @@
-import { DetailPresenter } from './detail-presenter';
 import { getStoryDetail } from '../../model/story';
-// import { postStory } from '../../model/story';
-// import { getStoryDetail } from '../../model/story';
-import { parsePathname } from '../../routes/url-parser';
-const { id } = parsePathname(window.location.hash);
-
+import { getActiveRoute } from '../../routes/url-parser';
 
 export class DetailPage {
-  #presenter = null;
+  #story = null;
 
-  render() {
+  async render() {
     return `
-      <section id="detail-story">
-        <h2>Detail Cerita</h2>
-        <div id="story-container">Memuat...</div>
-        <div id="map" style="height: 300px; margin-top: 16px;"></div>
+      <section class="container">
+        <h2 id="story-title">Detail Story</h2>
+        <div id="story-detail">Memuat...</div>
       </section>
     `;
   }
 
   async afterRender() {
-    const { id } = UrlParser.parseActiveUrlWithoutCombiner();
-    const token = localStorage.getItem('token');
-    this.#presenter = new DetailPresenter(getStoryDetail, this);
-    await this.#presenter.loadDetail(id, token);
-  }
-
-  showDetail(story) {
-    const container = document.getElementById('story-container');
-    container.innerHTML = `
-      <img src="${story.photoUrl}" alt="${story.name}" width="200"/>
-      <h3>${story.name}</h3>
-      <p>${story.description}</p>
-      <p><small>${new Date(story.createdAt).toLocaleString()}</small></p>
-    `;
-
-    if (story.lat && story.lon) {
-      const map = L.map('map').setView([story.lat, story.lon], 13);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-      }).addTo(map);
-
-      const marker = L.marker([story.lat, story.lon]).addTo(map);
-      marker.bindPopup(`<b>${story.name}</b>`).openPopup();
+    const { id } = getActiveRoute(true);
+    try {
+      this.#story = await getStoryDetail(id, localStorage.getItem('token'));
+      this.#showDetail(this.#story);
+    } catch (error) {
+      document.getElementById('story-detail').innerHTML = `<p>Gagal memuat detail: ${error.message}</p>`;
     }
   }
 
-  showError(error) {
-    document.getElementById('story-container').innerHTML = `<p>Gagal memuat detail: ${error.message}</p>`;
+  #showDetail(story) {
+    const detail = document.getElementById('story-detail');
+    detail.innerHTML = `
+      <img src="${story.photoUrl}" alt="${story.name}" width="250" />
+      <h3>${story.name}</h3>
+      <p>${story.description}</p>
+      <p><strong>Dibuat:</strong> ${new Date(story.createdAt).toLocaleString()}</p>
+      <p><strong>Latitude:</strong> ${story.lat ?? '-'}</p>
+      <p><strong>Longitude:</strong> ${story.lon ?? '-'}</p>
+    `;
   }
 }

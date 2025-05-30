@@ -1,14 +1,15 @@
 export class HomePresenter {
-  constructor(modelFn, view) {
-    this.modelFn = modelFn;
+  constructor(getStoriesUseCase, view) {
+    this.getStories = getStoriesUseCase;
     this.view = view;
+    this.stories = [];
   }
 
   async loadStories(token) {
     try {
       this.view.showLoading();
-      const result = await this.modelFn(token, true);
-      this.view.showStories(result.listStory);
+      this.stories = await this.getStories(token);
+      this.view.showStories(this.stories);
     } catch (error) {
       this.view.showError(error);
     }
