@@ -1,48 +1,53 @@
 import { getActiveRoute } from '../routes/url-parser';
 import { ACCESS_TOKEN_KEY } from '../config';
 
+
 export function getAccessToken() {
   try {
-    const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
-
-    if (accessToken === 'null' || accessToken === 'undefined') {
-      return null;
-    }
-
-    return accessToken;
+    const token = localStorage.getItem(ACCESS_TOKEN_KEY);
+    if (!token || token === 'null' || token === 'undefined') return null;
+    return token;
   } catch (error) {
-    console.error('getAccessToken: error:', error);
+    console.error('getAccessToken error:', error);
     return null;
   }
 }
+
 
 export function putAccessToken(token) {
   try {
     localStorage.setItem(ACCESS_TOKEN_KEY, token);
     return true;
   } catch (error) {
-    console.error('putAccessToken: error:', error);
+    console.error('putAccessToken error:', error);
     return false;
   }
 }
+
 
 export function removeAccessToken() {
   try {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     return true;
   } catch (error) {
-    console.error('getLogout: error:', error);
+    console.error('removeAccessToken error:', error);
     return false;
   }
 }
+
+
+export function getLogout() {
+  removeAccessToken();
+}
+
 
 const unauthenticatedRoutesOnly = ['/login', '/register'];
 
 export function checkUnauthenticatedRouteOnly(page) {
   const url = getActiveRoute();
-  const isLogin = !!getAccessToken();
+  const isLoggedIn = !!getAccessToken();
 
-  if (unauthenticatedRoutesOnly.includes(url) && isLogin) {
+  if (unauthenticatedRoutesOnly.includes(url) && isLoggedIn) {
     location.hash = '/';
     return null;
   }
@@ -50,17 +55,14 @@ export function checkUnauthenticatedRouteOnly(page) {
   return page;
 }
 
-export function checkAuthenticatedRoute(page) {
-  const isLogin = !!getAccessToken();
 
-  if (!isLogin) {
+export function checkAuthenticatedRoute(page) {
+  const isLoggedIn = !!getAccessToken();
+
+  if (!isLoggedIn) {
     location.hash = '/login';
     return null;
   }
 
   return page;
-}
-
-export function getLogout() {
-  removeAccessToken();
 }

@@ -2,17 +2,18 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { HomePresenter } from './home-presenter';
 import { getStories } from '../../model/story';
+import { getAccessToken } from '../../utils/auth';
 
 export class HomePage {
   #presenter = null;
   _map = null;
+  _token = null;
 
   render() {
-    const token = localStorage.getItem('token');
     return `
       <section class="container">
         <div>
-          ${token ? '<a href="#/add" class="btn-add">➕ Tambah Cerita</a>' : ''}
+          <a href="#/add" id="btn-add" class="btn-add" style="display: none;">➕ Tambah Cerita</a>
         </div>
         <div>
           <h2>Daftar Cerita</h2>
@@ -25,21 +26,20 @@ export class HomePage {
   }
 
   async afterRender() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      this.showError(new Error("Token tidak ditemukan. Silakan login ulang."));
+    this._token = getAccessToken();
+    if (!this._token) {
+      this.showError(new Error('Token tidak ditemukan. Silakan login ulang.'));
       return;
     }
 
-    this.#presenter = new HomePresenter(getStories, this);
-    await this.#presenter.loadStories(token);
+    document.getElementById('btn-add').style.display = 'inline-block';
 
-    document.getElementById('search-input').addEventListener('input', async (e) => {
+    this.#presenter = new HomePresenter(getStories, this);
+    await this.#presenter.loadStories(this._token);
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
       const keyword = e.target.value.toLowerCase();
-      const filtered = this.#presenter.stories.filter((story) =>
-        story.name.toLowerCase().includes(keyword) ||
-        story.description.toLowerCase().includes(keyword)
-      );
+      const filtered = this.#presenter.filterStories(keyword);
       this.showStories(filtered);
     });
   }
@@ -65,6 +65,11 @@ export class HomePage {
     }
 
     list.innerHTML = '';
+    if (!stories.length) {
+      list.innerHTML = '<p>Tidak ada cerita ditemukan.</p>';
+      return;
+    }
+
     stories.forEach((story) => {
       const li = document.createElement('li');
       li.innerHTML = `
@@ -76,7 +81,14 @@ export class HomePage {
       list.appendChild(li);
 
       if (story.lat && story.lon) {
-        const marker = L.marker([story.lat, story.lon]).addTo(this._map);
+        const marker = L.marker([story.lat, story.lon], {
+          icon: L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+          }),
+        }).addTo(this._map);
+
         marker.bindPopup(`<b>${story.name}</b><br>${story.description}`);
       }
     });

@@ -1,6 +1,7 @@
 import { getStoryDetail } from '../../model/story';
 import { getActiveRoute } from '../../routes/url-parser';
 import { DetailPresenter } from './detail-presenter';
+import { getAccessToken } from '../../utils/auth';
 
 export class DetailPage {
   #presenter = null;
@@ -16,7 +17,12 @@ export class DetailPage {
 
   async afterRender() {
     const { id } = getActiveRoute(true);
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
+
+    if (!token) {
+      this.showError(new Error("Token tidak ditemukan. Silakan login ulang."));
+      return;
+    }
 
     this.#presenter = new DetailPresenter(getStoryDetail, this);
     await this.#presenter.loadDetail(id, token);
@@ -35,6 +41,7 @@ export class DetailPage {
   }
 
   showError(error) {
-    document.getElementById('story-detail').innerHTML = `<p>Gagal memuat detail: ${error.message}</p>`;
+    const container = document.getElementById('story-detail');
+    container.innerHTML = `<p>Gagal memuat detail: ${error.message}</p>`;
   }
 }

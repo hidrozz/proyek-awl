@@ -15,7 +15,6 @@ export function generateLoaderAbsoluteTemplate() {
 export function generateMainNavigationListTemplate() {
   return `
     <li><a id="report-list-button" class="report-list-button" href="#/">Daftar Laporan</a></li>
-    <li><a id="bookmark-button" class="bookmark-button" href="#/bookmark">Laporan Tersimpan</a></li>
   `;
 }
 
@@ -281,15 +280,7 @@ export function generateUnsubscribeButtonTemplate() {
 export function generateSaveReportButtonTemplate() {
   return `
     <button id="report-detail-save" class="btn btn-transparent">
-      Simpan laporan <i class="far fa-bookmark"></i>
     </button>
   `;
 }
 
-export function generateRemoveReportButtonTemplate() {
-  return `
-    <button id="report-detail-remove" class="btn btn-transparent">
-      Buang laporan <i class="fas fa-bookmark"></i>
-    </button>
-  `;
-}

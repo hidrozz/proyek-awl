@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN_KEY } from '../../../config';
+import { putAccessToken } from '../../../utils/auth';
 
 export class LoginPresenter {
   constructor(modelFn, view) {
@@ -9,10 +9,20 @@ export class LoginPresenter {
   async login(email, password) {
     try {
       this.view.showLoading();
-      const { loginResult } = await this.modelFn(email, password);
-      localStorage.setItem(ACCESS_TOKEN_KEY, loginResult.token);
-      this.view.showSuccess(loginResult.name);
-      window.location.hash = '#/';
+
+      const response = await this.modelFn(email, password);
+
+      const token = response?.loginResult?.token;
+      const name = response?.loginResult?.name;
+
+      if (!token) {
+        throw new Error('Login gagal: token tidak ditemukan.');
+      }
+
+      putAccessToken(token);
+
+      this.view.showSuccess(name);
+      location.hash = '/';
     } catch (error) {
       this.view.showError(error);
     }

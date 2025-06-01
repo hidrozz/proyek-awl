@@ -15,4 +15,11 @@ export class HomePresenter {
       this.view.showError(error);
     }
   }
+
+  filterStories(keyword) {
+    return this.stories.filter((story) =>
+      story.name.toLowerCase().includes(keyword) ||
+      story.description.toLowerCase().includes(keyword)
+    );
+  }
 }
